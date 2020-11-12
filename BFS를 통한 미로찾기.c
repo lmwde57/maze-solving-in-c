@@ -26,19 +26,20 @@ int map[20][20] = {
 	{ -1, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1, 0, -1, 0, 0, 0, 0, -1, 0, -1 },
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 };
- // 1·Î ÇÒ °æ¿ì ¿À·ù°¡ ¹ß»ý. ÀüÃ¼¸¦ ÇÏ³ª·Î ÇÕÄ¥ ¶§¿¡ ¼öÁ¤ ¿¹Á¤. (-1ÀÇ °æ¿ì ÇÁ·Î±×·¡¹Ö½Ã °¡½Ã¼ºÀº º°·ÎÀÌ³ª ÀüÃ¼ ÇÁ·Î±×·¥À» ¹­À» ½Ã Æí¾È.)
+ // 1ë¡œ í•  ê²½ìš° ì˜¤ë¥˜ê°€ ë°œìƒ. ì „ì²´ë¥¼ í•˜ë‚˜ë¡œ í•©ì¹  ë•Œì— ìˆ˜ì • ì˜ˆì •. (-1ì˜ ê²½ìš° í”„ë¡œê·¸ëž˜ë°ì‹œ ê°€ì‹œì„±ì€ ë³„ë¡œì´ë‚˜ ì „ì²´ í”„ë¡œê·¸ëž¨ì„ ë¬¶ì„ ì‹œ íŽ¸ì•ˆ.)
+void square();
 
-void display() //Ã³À½¿¡ º¸ÀÏ -1°ú 0À¸·Î ÀÌ·ç¾îÁø ¹Ì·Î
+void display() //ì²˜ìŒì— ë³´ì¼ -1ê³¼ 0ìœ¼ë¡œ ì´ë£¨ì–´ì§„ ë¯¸ë¡œ
 {
 	int x, y;
-	for (x = 0; x < 20; x++) // x ³Êºñ
+	for (x = 0; x < 20; x++) // x ë„ˆë¹„
 	{
-		for (y = 0; y < 20; y++) // y ³ôÀÌ
-			printf("%3d", map[x][y]); //±ò²ûÇÏ°Ô Ãâ·ÂÇÏ±â À§ÇØ %3d
+		for (y = 0; y < 20; y++) // y ë†’ì´
+			printf("%3d", map[x][y]); //ê¹”ë”í•˜ê²Œ ì¶œë ¥í•˜ê¸° ìœ„í•´ %3d
 		printf("\n");
 	}
 }
-void BFS(int x, int y, int k) //³Êºñ ¿ì¼±À¸·Î ¸ðµç ±æ µ¿½Ã Å½»ö
+void BFS(int x, int y, int k) //ë„ˆë¹„ ìš°ì„ ìœ¼ë¡œ ëª¨ë“  ê¸¸ ë™ì‹œ íƒìƒ‰
 {
 	int dx[] = { 0, 1, 0, -1 };
 	int dy[] = { 1, 0, -1, 0 };
@@ -50,24 +51,25 @@ void BFS(int x, int y, int k) //³Êºñ ¿ì¼±À¸·Î ¸ðµç ±æ µ¿½Ã Å½»ö
 	if (map[x][y] != 0)
 		return;
 	map[x][y] = k;
+	square(); //ì´ê±¸ ì“°ì§€ì•Šì„ ê²½ìš° ë°˜ì‘ ì—†ìŒ.
 	for (i = 0; i < 4; ++i)
 		BFS(x + dx[i], y + dy[i], k + 1);
 }
 
-void square() { //»ç°¢ÇüÀ¸·Î ¹Ì·Î+¹æ¹ý¼ö Ãâ·Â
+void square() { //ì‚¬ê°í˜•ìœ¼ë¡œ ë¯¸ë¡œ+ë°©ë²•ìˆ˜ ì¶œë ¥
 	int a, b;
-
-	for (a = 0; a < 20; a++) // a ³Êºñ
+	system("cls"); //ì´ê±¸ void bfs ì•ˆì— ìžˆëŠ” squareë¥¼ ì‚¬ìš©í•¨ìœ¼ë¡œì¨ ì• ë‹ˆë©”ì´ì…˜ì²˜ëŸ¼ ì¶œë ¥
+	for (a = 0; a < 20; a++) // a ë„ˆë¹„
 	{
-		for (b = 0; b < 20; b++) //b ³ôÀÌ
+		for (b = 0; b < 20; b++) //b ë†’ì´
 		{
 			if (map[a][b] == -1)
 			{
-				printf("¡à"); // -1À» º®À¸·Î
+				printf("â–¡"); // -1ì„ ë²½ìœ¼ë¡œ
 			}
-			else if (map[a][b] != -1) // BFS¸¦ ÅëÇØ ±æÀÌ ¼ýÀÚ·Î ³ª¿À¹Ç·Î -1À» Á¦¿ÜÇÑ (¾Æ·¡ÁÖ¼®)
+			else if (map[a][b] != -1) // BFSë¥¼ í†µí•´ ê¸¸ì´ ìˆ«ìžë¡œ ë‚˜ì˜¤ë¯€ë¡œ -1ì„ ì œì™¸í•œ (ì•„ëž˜ì£¼ì„)
 			{
-				printf("%2d", map[a][b]); // ¡à¿Í ¸ÂÃß±â À§ÇØ %2d,                   ¸ðµç ¼ýÀÚ¿¡ ´ëÇØ¼­ ±×´ë·Î Ãâ·Â
+				printf("%2d", map[a][b]); // â–¡ì™€ ë§žì¶”ê¸° ìœ„í•´ %2d,                   ëª¨ë“  ìˆ«ìžì— ëŒ€í•´ì„œ ê·¸ëŒ€ë¡œ ì¶œë ¥
 			}
 		}
 		printf("\n");
@@ -79,6 +81,6 @@ int main()
 	BFS(1, 1, 1);
 	square();
 	//printf("\n");
-	//display(); //squareÀ» °ÅÄ¡Áö ¾ÊÀº ¹Ì·Î+¹æ¹ý¼ö Ãâ·Â
+	//display(); //squareì„ ê±°ì¹˜ì§€ ì•Šì€ ë¯¸ë¡œ+ë°©ë²•ìˆ˜ ì¶œë ¥
 	return 0;
 }
