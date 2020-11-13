@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -6,53 +6,53 @@
 #include <windows.h>
 #include <conio.h>
 
-// ¹Ì·Î Å©±â 
-#define MAX_X 21 //y(¼¼·Î)Ãà ÃÖ´ë Å©±â
-#define MAX_Y 21 //x(°¡·Î)Ãà ÃÖ´ë Å©±â
-//ÀÏ´ÜÀº Å©±â °íÁ¤(Çò°¥¸®Áö ¾Ê°Ô ÀÛ¼º.) ÃßÈÄ À¯µ¿ÀûÀ¸·Î º¯µ¿ °¡´ÉÇÏ°Ô ÇÒ°Í.
+// ë¯¸ë¡œ í¬ê¸° 
+#define MAX_X 21 //y(ì„¸ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+#define MAX_Y 21 //x(ê°€ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+//ì¼ë‹¨ì€ í¬ê¸° ê³ ì •(í—·ê°ˆë¦¬ì§€ ì•Šê²Œ ì‘ì„±.) ì¶”í›„ ìœ ë™ì ìœ¼ë¡œ ë³€ë™ ê°€ëŠ¥í•˜ê²Œ í• ê²ƒ.
 
-int posX = 1, posY = 1; //position ÀÌ°Å´Â y°¡ ¼¼·Î x°¡ °¡·Î
+int posX = 1, posY = 1; //position ì´ê±°ëŠ” yê°€ ì„¸ë¡œ xê°€ ê°€ë¡œ
 
 int map[MAX_X][MAX_Y];
 
-void initMap() { //¹Ì·Î ÃÊ±âÈ­
+void initMap() { //ë¯¸ë¡œ ì´ˆê¸°í™”
 	int i, j;
 
 	for (i = 0; i < MAX_Y; i++)
 	{
 		for (j = 0; j < MAX_X; j++)
 		{
-			if (i == 0 || j == 0 || i == MAX_Y - 1 || j == MAX_X - 1) // Å×µÎ¸® ¸¸µé±â
-				map[i][j] = 1; // 1 = º®
+			if (i == 0 || j == 0 || i == MAX_Y - 1 || j == MAX_X - 1) // í…Œë‘ë¦¬ ë§Œë“¤ê¸°
+				map[i][j] = 1; // 1 = ë²½
 			else
-				map[i][j] = 0; // 0 = °ø¹é °ø¹éÀÌ °ğ ±æÀÌ¶ó´Â ´À³¦ÀÌ±ä ÇÏ´Ù. ÀÌ°ÍÀÌ 2°¡ µÉ °æ¿ì ÀüÃ¼ °ø¹é
+				map[i][j] = 0; // 0 = ê³µë°± ê³µë°±ì´ ê³§ ê¸¸ì´ë¼ëŠ” ëŠë‚Œì´ê¸´ í•˜ë‹¤. ì´ê²ƒì´ 2ê°€ ë  ê²½ìš° ì „ì²´ ê³µë°±
 		}
 	}
-	map[1][1] = 0; // 2 = ±æ ½ÃÀÛÁ¡ ¼³Á¤ (0ÀÌ¾îµµ Å©°Ô ¹®Á¦ x)
+	map[1][1] = 0; // 2 = ê¸¸ ì‹œì‘ì  ì„¤ì • (0ì´ì–´ë„ í¬ê²Œ ë¬¸ì œ x)
 }
 
-void SetLoad() { //±æ »ı¼º°ü·Ã
+void SetLoad() { //ê¸¸ ìƒì„±ê´€ë ¨
 	srand((unsigned)time(NULL));
 	int i, Dir; // Direction
 
 	for (i = 0; i < 10000; i++)
 	{
-		Dir = rand() % 4; // 0 = À§, 1 = ¿À¸¥ÂÊ, 2 = ¾Æ·¡, 3 = ¿ŞÂÊ 
+		Dir = rand() % 4; // 0 = ìœ„, 1 = ì˜¤ë¥¸ìª½, 2 = ì•„ë˜, 3 = ì™¼ìª½ 
 
 		switch (Dir)
 		{
 		case 0:
-			if (posY == 1) continue; // À§ÂÊÀ¸·Î °¥ ±æÀÌ ¾ø´Â °æ¿ì 
+			if (posY == 1) continue; // ìœ„ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš° 
 
-			if (map[posY - 2][posX] == 0) // 2Ä­ ÀÌµ¿ÇÑ Ä­ÀÌ °ø¹éÀÎ °æ¿ì
+			if (map[posY - 2][posX] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
 			{
 				posY--; map[posY][posX] = 2;
 				posY--; map[posY][posX] = 2;
 			}
-			else if (map[posY - 2][posX] == 2) // 2Ä­ ÀÌµ¿ÇÑ Ä­¿¡ ±æÀÌ ÀÖ´Â °æ¿ì
+			else if (map[posY - 2][posX] == 2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
 				posY -= 2;
 			break;
-			//¾Æ·¡ ºñ½ÁÇÑ °úÁ¤
+			//ì•„ë˜ ë¹„ìŠ·í•œ ê³¼ì •
 		case 1:
 			if (posX == MAX_X - 2) continue;
 
@@ -92,19 +92,19 @@ void SetLoad() { //±æ »ı¼º°ü·Ã
 	}
 }
 
-void Draw_Maze() { //¹Ì·Î ±×¸®±â(Ãâ·Â)
+void Draw_Maze() { //ë¯¸ë¡œ ê·¸ë¦¬ê¸°(ì¶œë ¥)
 	int i, j;
 	for (i = 0; i < MAX_Y; i++)
 	{
 		for (j = 0; j < MAX_X; j++)
 		{
-			if (map[i][j] == 0 || map[i][j] == 1) // º®
-				printf("¡à");
-			else if (map[i][j] == 3) { // ½ÃÀÛÁ¡ ÁöÁ¤
-				printf("¡Ü");
+			if (map[i][j] == 0 || map[i][j] == 1) // ë²½
+				printf("â–¡");
+			else if (map[i][j] == 3) { // ì‹œì‘ì  ì§€ì •
+				printf("â—");
 			}
-			else if (i == MAX_Y - 2 && j == MAX_X - 2) // µµÂøÁ¡ ÁöÁ¤
-				printf("¡å");
+			else if (i == MAX_Y - 2 && j == MAX_X - 2) // ë„ì°©ì  ì§€ì •
+				printf("â–¼");
 			else if (map[i][j] == 2)
 				printf("  ");
 		}
@@ -120,39 +120,199 @@ int main() {
 	//initMap();
 	SetLoad();
 	//Draw_Maze();
-	int ch_x = 1, ch_y = 1; // characterÀÇ À§Ä¡ [x°¡ ³ôÀÌ°ü·Ã y°¡ ³Êºñ°ü·Ã]
-	int cmd = 0; // command È­»ìÇ¥ °ü·Ã
+	int ch_x = 1, ch_y = 1; // characterì˜ ìœ„ì¹˜ [xê°€ ë†’ì´ê´€ë ¨ yê°€ ë„ˆë¹„ê´€ë ¨]
+	int cmd = 0; // command í™”ì‚´í‘œ ê´€ë ¨
 	while (1) {
-		system("cls"); // ÀÌÀü °á°ú¸¦ Áö¿ì°í ÀÌÈÄ °á°ú ÀçÃâ·Â (±ôºıÀÓ)
-		printf("±æÃ£±â ¼º°ø ÈÄ End¸¦ ´©¸£½Ê½Ã¿À.\n");
-		printf("(¡å¿¡ µµÂø½Ã ±æÃ£±â ¼º°øÀÔ´Ï´Ù.)\n");
+		system("cls"); // ì´ì „ ê²°ê³¼ë¥¼ ì§€ìš°ê³  ì´í›„ ê²°ê³¼ ì¬ì¶œë ¥ (ê¹œë¹¡ì„)
+		printf("ê¸¸ì°¾ê¸° ì„±ê³µ í›„ Endë¥¼ ëˆ„ë¥´ì‹­ì‹œì˜¤.\n");
+		printf("(â–¼ì— ë„ì°©ì‹œ ê¸¸ì°¾ê¸° ì„±ê³µì…ë‹ˆë‹¤.)\n");
 		character(ch_x, ch_y);
 		Draw_Maze();
 		//map_create();
 		cmd = _getch();
 		if (cmd == 77 && map[ch_x][ch_y + 1] == 2) {
 			map[ch_x][ch_y] = 2;
-			ch_y++; // ¡æ¹æÇâ 77
+			ch_y++; // â†’ë°©í–¥ 77
 		}
 		else if (cmd == 72 && map[ch_x - 1][ch_y] == 2) {
 			map[ch_x][ch_y] = 2;
-			ch_x--; // ¡è¹æÇâ 72
+			ch_x--; // â†‘ë°©í–¥ 72
 		}
 		else if (cmd == 75 && map[ch_x][ch_y - 1] == 2) {
 			map[ch_x][ch_y] = 2;
-			ch_y--; // ¡ç¹æÇâ 75
+			ch_y--; // â†ë°©í–¥ 75
 		}
 		else if (cmd == 80 && map[ch_x + 1][ch_y] == 2) {
 			map[ch_x][ch_y] = 2;
-			ch_x++; // ¡é¹æÇâ 80
+			ch_x++; // â†“ë°©í–¥ 80
 		}
 		if (map[19][18] == 3 && cmd == 77 && map[ch_x][ch_y + 1] == 4) {
 			map[ch_x][ch_y] = 0;
 			ch_y++;
-			map[19][19] = 0; // ³»°¡ ¸¸µé ¸ğµç ¹Ì·ÎÀÇ µµÂøÁöÁ¡ÀÌ [ÃÖ´ëÅ©±â-1][ÃÖ´ëÅ©±â-1] ÀÎ Á¡À» °¨¾È. À§ÀÇ ÁÖ¼®°ú µ¿ÀÏ
+			map[19][19] = 0; // ë‚´ê°€ ë§Œë“¤ ëª¨ë“  ë¯¸ë¡œì˜ ë„ì°©ì§€ì ì´ [ìµœëŒ€í¬ê¸°-1][ìµœëŒ€í¬ê¸°-1] ì¸ ì ì„ ê°ì•ˆ. ìœ„ì˜ ì£¼ì„ê³¼ ë™ì¼
 		}
 		if (map[19][19] == 3 && cmd == 79) {
-			printf("±æÃ£±â ¼º°ø!! \nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù...\n"); // End ¹öÆ°À¸·Î Á¾·á 79
+			printf("ê¸¸ì°¾ê¸° ì„±ê³µ!! \ní”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤...\n"); // End ë²„íŠ¼ìœ¼ë¡œ ì¢…ë£Œ 79
+			return 0;
+		}
+	}
+}*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <time.h>
+#include <windows.h>
+#include <conio.h>
+
+// ë¯¸ë¡œ í¬ê¸° 
+#define MAX_X 21 //y(ì„¸ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+#define MAX_Y 21 //x(ê°€ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+//ì¼ë‹¨ì€ í¬ê¸° ê³ ì •(í—·ê°ˆë¦¬ì§€ ì•Šê²Œ ì‘ì„±.) ì¶”í›„ ìœ ë™ì ìœ¼ë¡œ ë³€ë™ ê°€ëŠ¥í•˜ê²Œ í• ê²ƒ.
+
+int posX = 1, posY = 1; //position ì´ê±°ëŠ” yê°€ ì„¸ë¡œ xê°€ ê°€ë¡œ
+
+int map[MAX_X][MAX_Y];
+
+void initMap() { //ë¯¸ë¡œ ì´ˆê¸°í™”
+	int i, j;
+
+	for (i = 0; i < MAX_Y; i++)
+	{
+		for (j = 0; j < MAX_X; j++)
+		{
+			if (i == 0 || j == 0 || i == MAX_Y - 1 || j == MAX_X - 1) // í…Œë‘ë¦¬ ë§Œë“¤ê¸°
+				map[i][j] = -1; // 1 = ë²½
+			else
+				map[i][j] = -2; // 0 = ê³µë°± ê³µë°±ì´ ê³§ ê¸¸ì´ë¼ëŠ” ëŠë‚Œì´ê¸´ í•˜ë‹¤. ì´ê²ƒì´ 2ê°€ ë  ê²½ìš° ì „ì²´ ê³µë°±
+		}
+	}
+	map[1][1] = 0; // 2 = ê¸¸ ì‹œì‘ì  ì„¤ì • (0ì´ì–´ë„ í¬ê²Œ ë¬¸ì œ x)
+}
+
+void SetLoad() { //ê¸¸ ìƒì„±ê´€ë ¨
+	srand((unsigned)time(NULL));
+	int i, Dir; // Direction
+
+	for (i = 0; i < 10000; i++)
+	{
+		Dir = rand() % 4; // 0 = ìœ„, 1 = ì˜¤ë¥¸ìª½, 2 = ì•„ë˜, 3 = ì™¼ìª½ 
+
+		switch (Dir)
+		{
+		case 0:
+			if (posY == 1) continue; // ìœ„ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš° 
+
+			if (map[posY - 2][posX] == -2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
+			{
+				posY--; map[posY][posX] = 0;
+				posY--; map[posY][posX] = 0;
+			}
+			else if (map[posY - 2][posX] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
+				posY -= 2;
+			break;
+			//ì•„ë˜ ë¹„ìŠ·í•œ ê³¼ì •
+		case 1:
+			if (posX == MAX_X - 2) continue;
+
+			if (map[posY][posX + 2] == -2)
+			{
+				posX++; map[posY][posX] = 0;
+				posX++; map[posY][posX] = 0;
+			}
+			else if (map[posY][posX + 2] == 0)
+				posX += 2;
+			break;
+
+		case 2:
+			if (posY == MAX_Y - 2) continue;
+
+			if (map[posY + 2][posX] == -2)
+			{
+				posY++; map[posY][posX] = 0;
+				posY++; map[posY][posX] = 0;
+			}
+			else if (map[posY + 2][posX] == 0)
+				posY += 2;
+			break;
+
+		case 3:
+			if (posX == 1) continue;
+
+			if (map[posY][posX - 2] == -2)
+			{
+				posX--; map[posY][posX] = 0;
+				posX--; map[posY][posX] = 0;
+			}
+			else if (map[posY][posX - 2] == 0)
+				posX -= 2;
+			break;
+		}
+	}
+}
+
+void Draw_Maze() { //ë¯¸ë¡œ ê·¸ë¦¬ê¸°(ì¶œë ¥)
+	int i, j;
+	for (i = 0; i < MAX_Y; i++)
+	{
+		for (j = 0; j < MAX_X; j++)
+		{
+			if (map[i][j] == -1 || map[i][j] == -2) // ë²½
+				printf("â–¡");
+			else if (map[i][j] == 3) { // ì‹œì‘ì  ì§€ì •
+				printf("â—");
+			}
+			else if (i == MAX_Y - 2 && j == MAX_X - 2) // ë„ì°©ì  ì§€ì •
+				printf("â–¼");
+			else if (map[i][j] == 0)
+				printf("  ");
+		}
+		printf("\n");
+	}
+}
+
+void character(int x, int y) {
+	map[x][y] = 3;
+}
+
+int main() {
+	initMap();
+	SetLoad();
+	//Draw_Maze();
+	int ch_x = 1, ch_y = 1; // characterì˜ ìœ„ì¹˜ [xê°€ ë†’ì´ê´€ë ¨ yê°€ ë„ˆë¹„ê´€ë ¨]
+	int cmd = 0; // command í™”ì‚´í‘œ ê´€ë ¨
+	while (1) {
+		system("cls"); // ì´ì „ ê²°ê³¼ë¥¼ ì§€ìš°ê³  ì´í›„ ê²°ê³¼ ì¬ì¶œë ¥ (ê¹œë¹¡ì„)
+		printf("ê¸¸ì°¾ê¸° ì„±ê³µ í›„ Endë¥¼ ëˆ„ë¥´ì‹­ì‹œì˜¤.\n");
+		printf("(â–¼ì— ë„ì°©ì‹œ ê¸¸ì°¾ê¸° ì„±ê³µì…ë‹ˆë‹¤.)\n");
+		character(ch_x, ch_y);
+		Draw_Maze();
+		//map_create();
+		cmd = _getch();
+		if (cmd == 77 && map[ch_x][ch_y + 1] == 0) {
+			map[ch_x][ch_y] = 0;
+			ch_y++; // â†’ë°©í–¥ 77
+		}
+		else if (cmd == 72 && map[ch_x - 1][ch_y] == 0) {
+			map[ch_x][ch_y] = 0;
+			ch_x--; // â†‘ë°©í–¥ 72
+		}
+		else if (cmd == 75 && map[ch_x][ch_y - 1] == 0) {
+			map[ch_x][ch_y] = 0;
+			ch_y--; // â†ë°©í–¥ 75
+		}
+		else if (cmd == 80 && map[ch_x + 1][ch_y] == 0) {
+			map[ch_x][ch_y] = 0;
+			ch_x++; // â†“ë°©í–¥ 80
+		}
+		if (map[19][18] == 3 && cmd == 77 && map[ch_x][ch_y + 1] == 4) {
+			map[ch_x][ch_y] = 0;
+			ch_y++;
+			map[19][19] = 0; // ë‚´ê°€ ë§Œë“¤ ëª¨ë“  ë¯¸ë¡œì˜ ë„ì°©ì§€ì ì´ [ìµœëŒ€í¬ê¸°-1][ìµœëŒ€í¬ê¸°-1] ì¸ ì ì„ ê°ì•ˆ. ìœ„ì˜ ì£¼ì„ê³¼ ë™ì¼
+		}
+		if (map[19][19] == 3 && cmd == 79) {
+			printf("ê¸¸ì°¾ê¸° ì„±ê³µ!! \ní”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤...\n"); // End ë²„íŠ¼ìœ¼ë¡œ ì¢…ë£Œ 79
 			return 0;
 		}
 	}
