@@ -5,123 +5,125 @@
 #include <time.h>
 #include <windows.h>
 #include <conio.h>
-#include <WinCon.h> //windows.h Çì´õÆÄÀÏ¿¡ ¼ÓÇØÀÖÀ¸³ª ¸¸¾àÀ» À§ÇØ ³Ö¾îµÒ.
+#include <WinCon.h> //windows.h í—¤ë”íŒŒì¼ì— ì†í•´ìˆìœ¼ë‚˜ ë§Œì•½ì„ ìœ„í•´ ë„£ì–´ë‘ .
 
-void setColor(unsigned short text) { // ¼ıÀÚ, ±ÛÀÚ, ¹®ÀÚÀÇ »ö»óÀ» ¼³Á¤ÇÏ´Â ÇÔ¼ö
+void setColor(unsigned short text) { // ìˆ«ì, ê¸€ì, ë¬¸ìì˜ ìƒ‰ìƒì„ ì„¤ì •í•˜ëŠ” í•¨ìˆ˜
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text);
 }
 
-// ¹Ì·Î Å©±â 
-#define MAX_X 21 //y(¼¼·Î)Ãà ÃÖ´ë Å©±â
-#define MAX_Y 21 //x(°¡·Î)Ãà ÃÖ´ë Å©±â
-//È¥µ¿ÀÇ ¿©Áö°¡ ÀÖÀ¸¹Ç·Î MAX_X¿Í MAX_YÀÇ Å©±â¸¦ µ¿ÀÏÇÏ°Ô ÇØÁÖ´Â °ÍÀÌ ÁÁÀ½.
+// ë¯¸ë¡œ í¬ê¸° 
+#define MAX_X 21 //y(ì„¸ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+#define MAX_Y 21 //x(ê°€ë¡œ)ì¶• ìµœëŒ€ í¬ê¸°
+//í˜¼ë™ì˜ ì—¬ì§€ê°€ ìˆìœ¼ë¯€ë¡œ MAX_Xì™€ MAX_Yì˜ í¬ê¸°ë¥¼ ë™ì¼í•˜ê²Œ í•´ì£¼ëŠ” ê²ƒì´ ì¢‹ìŒ.
 
-int posX = 1, posY = 1; //position ÀÌ°Å´Â y°¡ ¼¼·Î x°¡ °¡·Î
+int posX = 1, posY = 1; //position ì´ê±°ëŠ” yê°€ ì„¸ë¡œ xê°€ ê°€ë¡œ
 
 int map[MAX_X][MAX_Y];
 
-void initMap() { //¹Ì·Î ÃÊ±âÈ­
+void initMap() { //ë¯¸ë¡œ ì´ˆê¸°í™”
 	int i, j;
 
 	for (i = 0; i < MAX_Y; i++)
 	{
 		for (j = 0; j < MAX_X; j++)
 		{
-			if (i == 0 || j == 0 || i == MAX_Y - 1 || j == MAX_X - 1) // Å×µÎ¸® ¸¸µé±â
-				map[i][j] = -1; // -1 = º®
+			if (i == 0 || j == 0 || i == MAX_Y - 1 || j == MAX_X - 1) // í…Œë‘ë¦¬ ë§Œë“¤ê¸°
+				map[i][j] = -1; // -1 = ë²½
 			else
-				map[i][j] = -2; // -2 = °ø¹é, °ø¹éÀÌ °ğ ±æÀÌ¶ó´Â ´À³¦ÀÌ±ä ÇÏ´Ù. tmi ÀÌ°ÍÀÌ 0ÀÌ µÉ °æ¿ì ÀüÃ¼ °ø¹é Å×µÎ¸®¸¸ »ı¼º
+				map[i][j] = -2; // -2 = ê³µë°±, ê³µë°±ì´ ê³§ ê¸¸ì´ë¼ëŠ” ëŠë‚Œì´ê¸´ í•˜ë‹¤. tmi ì´ê²ƒì´ 0ì´ ë  ê²½ìš° ì „ì²´ ê³µë°± í…Œë‘ë¦¬ë§Œ ìƒì„±
 		}
 	}
-	map[1][1] = 0; // 2 = ±æ ½ÃÀÛÁ¡ ¼³Á¤ (0ÀÌ¾îµµ Å©°Ô ¹®Á¦ x -- ¾ö¹ĞÈ÷ 0ÀÌ¸é ¹®Á¦°¡ ÀÖÀ¸³ª
-}                                      // [1][1] ÁöÁ¡ °íÁ¤À¸·Î ÀÎÇØ ¾ø¾îº¸ÀÌ´Â °ÍÃ³·³ º¸ÀÎ°Í)
+	map[1][1] = 0; // 2 = ê¸¸ ì‹œì‘ì  ì„¤ì • (0ì´ì–´ë„ í¬ê²Œ ë¬¸ì œ x -- ì—„ë°€íˆ 0ì´ë©´ ë¬¸ì œê°€ ìˆìœ¼ë‚˜
+}                                      // [1][1] ì§€ì  ê³ ì •ìœ¼ë¡œ ì¸í•´ ì—†ì–´ë³´ì´ëŠ” ê²ƒì²˜ëŸ¼ ë³´ì¸ê²ƒ)
 
-void SetLoad() { //±æ »ı¼º°ü·Ã
+void SetLoad() { //ê¸¸ ìƒì„±ê´€ë ¨
 	srand((unsigned)time(NULL));
 	int i, Dir; // Direction
 
 	for (i = 0; i < 10000; i++)
 	{
-		Dir = rand() % 4; // 0 = À§, 1 = ¿À¸¥ÂÊ, 2 = ¾Æ·¡, 3 = ¿ŞÂÊ 
+		Dir = rand() % 4; // 0 = ìœ„, 1 = ì˜¤ë¥¸ìª½, 2 = ì•„ë˜, 3 = ì™¼ìª½ 
 
-		// ÇØ´ç ¹Ì·ÎÀÇ Æ¯Â¡
-		// 1. ±æÀÌ ÇÑ °¡Áö¹Û¿¡ ¾ø´Ù.
-		// 2. ±æÀÌ Àı´ë ¸·È÷Áö ¾Ê´Â´Ù.
-		// 3. Àı´ë·Î ¾î¶°ÇÑ ±æ ºÎºĞ¿¡ ´ëÇØ¼­ 2x2 ÀÌ»óÀÇ Á¤¹æÇü ÇüÅÂ°¡ ³ª¿ÀÁö ¾Ê´Â´Ù. (º¸ÀÌÁö ¾Ê´Â´Ù.)
+		// í•´ë‹¹ ë¯¸ë¡œì˜ íŠ¹ì§•
+		// 1. ê¸¸ì´ í•œ ê°€ì§€ë°–ì— ì—†ë‹¤.
+		// 2. ê¸¸ì´ ì ˆëŒ€ ë§‰íˆì§€ ì•ŠëŠ”ë‹¤.
+		// 3. ì ˆëŒ€ë¡œ ì–´ë– í•œ ê¸¸ ë¶€ë¶„ì— ëŒ€í•´ì„œ 2x2 ì´ìƒì˜ ì •ë°©í˜• í˜•íƒœê°€ ë‚˜ì˜¤ì§€ ì•ŠëŠ”ë‹¤. (ë³´ì´ì§€ ì•ŠëŠ”ë‹¤.)
+		// ë‹¨ì  : ë¯¸ë¡œë¥¼ í•œ í”„ë¡œê·¸ë¨ ë‚´ì—ì„œ ì¬ìƒì„±í•  ë•Œ ì‹œì‘ì§€ì  ì£¼ë³€ 3x3 ë¶€ê·¼ì—ì„œ ê¸¸ì´ ë§‰íˆëŠ” ê²½ìš°ê°€ ìƒê¸°ë‚˜ ì›ì¸ì€ ì•Œ ìˆ˜ ì—†ë‹¤.
+		// ì•„ë§ˆ ì´ì „ ë¯¸ë¡œì˜ ê²ƒì„ ì–´ëŠì •ë„ ë°›ì•„ì˜¤ëŠ” ê²ƒ ê°™ë‹¤.
 
 		switch (Dir)
 		{
 		case 0:
-			if (posY == 1) continue; // À§ÂÊÀ¸·Î °¥ ±æÀÌ ¾ø´Â °æ¿ì 
+			if (posY == 1) continue; // ìœ„ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš° 
 
-			if (map[posY - 2][posX] == -2) // 2Ä­ ÀÌµ¿ÇÑ Ä­ÀÌ °ø¹éÀÎ °æ¿ì
+			if (map[posY - 2][posX] == -2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
 			{
 				posY--; map[posY][posX] = 0;
 				posY--; map[posY][posX] = 0;
 			}
-			else if (map[posY - 2][posX] == 0) // 2Ä­ ÀÌµ¿ÇÑ Ä­¿¡ ±æÀÌ ÀÖ´Â °æ¿ì
+			else if (map[posY - 2][posX] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
 				posY -= 2;
 			break;
-			//¾Æ·¡ ºñ½ÁÇÑ °úÁ¤
+			//ì•„ë˜ ë¹„ìŠ·í•œ ê³¼ì •
 		case 1:
-			if (posX == MAX_X - 2) continue; // ¿À¸¥ÂÊÀ¸·Î °¥ ±æÀÌ ¾ø´Â °æ¿ì
+			if (posX == MAX_X - 2) continue; // ì˜¤ë¥¸ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš°
 
-			if (map[posY][posX + 2] == -2) // 2Ä­ ÀÌµ¿ÇÑ Ä­ÀÌ °ø¹éÀÎ °æ¿ì
+			if (map[posY][posX + 2] == -2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
 			{
 				posX++; map[posY][posX] = 0;
 				posX++; map[posY][posX] = 0;
 			}
-			else if (map[posY][posX + 2] == 0) // 2Ä­ ÀÌµ¿ÇÑ Ä­¿¡ ±æÀÌ ÀÖ´Â °æ¿ì
+			else if (map[posY][posX + 2] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
 				posX += 2;
 			break;
 
 		case 2:
-			if (posY == MAX_Y - 2) continue; // ¾Æ·¡ÂÊÀ¸·Î °¥ ±æÀÌ ¾ø´Â °æ¿ì 
+			if (posY == MAX_Y - 2) continue; // ì•„ë˜ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš° 
 
-			if (map[posY + 2][posX] == -2) // 2Ä­ ÀÌµ¿ÇÑ Ä­ÀÌ °ø¹éÀÎ °æ¿ì
+			if (map[posY + 2][posX] == -2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
 			{
 				posY++; map[posY][posX] = 0;
 				posY++; map[posY][posX] = 0;
 			}
-			else if (map[posY + 2][posX] == 0) // 2Ä­ ÀÌµ¿ÇÑ Ä­¿¡ ±æÀÌ ÀÖ´Â °æ¿ì
+			else if (map[posY + 2][posX] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
 				posY += 2;
 			break;
 
 		case 3:
-			if (posX == 1) continue; // ¿ŞÂÊÀ¸·Î °¥ ±æÀÌ ¾ø´Â °æ¿ì 
+			if (posX == 1) continue; // ì™¼ìª½ìœ¼ë¡œ ê°ˆ ê¸¸ì´ ì—†ëŠ” ê²½ìš° 
 
-			if (map[posY][posX - 2] == -2) // 2Ä­ ÀÌµ¿ÇÑ Ä­ÀÌ °ø¹éÀÎ °æ¿ì
+			if (map[posY][posX - 2] == -2) // 2ì¹¸ ì´ë™í•œ ì¹¸ì´ ê³µë°±ì¸ ê²½ìš°
 			{
 				posX--; map[posY][posX] = 0;
 				posX--; map[posY][posX] = 0;
 			}
-			else if (map[posY][posX - 2] == 0) // 2Ä­ ÀÌµ¿ÇÑ Ä­¿¡ ±æÀÌ ÀÖ´Â °æ¿ì
+			else if (map[posY][posX - 2] == 0) // 2ì¹¸ ì´ë™í•œ ì¹¸ì— ê¸¸ì´ ìˆëŠ” ê²½ìš°
 				posX -= 2;
 			break;
 		}
 	}
 }
 
-void Draw_Maze() { //¹Ì·Î ±×¸®±â(Ãâ·Â)
+void Draw_Maze() { //ë¯¸ë¡œ ê·¸ë¦¬ê¸°(ì¶œë ¥)
 	int i, j;
-	unsigned short text2 = 0x0002; //»ö»ó ÃÊ·Ï»ö
-	unsigned short text3 = 0x0003; //»ö»ó ÇÏ´Ã»ö
-	unsigned short text4 = 0x0004; //»ö»ó ºÓÀº»ö
+	unsigned short text2 = 0x0002; //ìƒ‰ìƒ ì´ˆë¡ìƒ‰
+	unsigned short text3 = 0x0003; //ìƒ‰ìƒ í•˜ëŠ˜ìƒ‰
+	unsigned short text4 = 0x0004; //ìƒ‰ìƒ ë¶‰ì€ìƒ‰
 	for (i = 0; i < MAX_Y; i++)
 	{
 		for (j = 0; j < MAX_X; j++)
 		{
-			if (map[i][j] == -1 || map[i][j] == -2) {// º®, ¾îÂ÷ÇÇ ¸ø°¡´Â ±æÀÎ °ø¹éÀ¸·Î Ãë±ŞµÈ -1µµ °¡½Ã¼º¿¡ ÁÁ°Ô º®À¸·Î Ãâ·Â
+			if (map[i][j] == -1 || map[i][j] == -2) {// ë²½, ì–´ì°¨í”¼ ëª»ê°€ëŠ” ê¸¸ì¸ ê³µë°±ìœ¼ë¡œ ì·¨ê¸‰ëœ -1ë„ ê°€ì‹œì„±ì— ì¢‹ê²Œ ë²½ìœ¼ë¡œ ì¶œë ¥
 				setColor(text2);
-				printf("¡à");
+				printf("â–¡");
 			}
-			else if (map[i][j] == 3) { // ½ÃÀÛÁ¡ ÁöÁ¤
+			else if (map[i][j] == 3) { // ì‹œì‘ì  ì§€ì •
 				setColor(text3);
-				printf("¡Ü");
+				printf("â—");
 			}
-			else if (i == MAX_Y - 2 && j == MAX_X - 2) { // µµÂøÁ¡ ÁöÁ¤ -> °íÁ¤ÀÌ ¾Æ´Ô.
+			else if (i == MAX_Y - 2 && j == MAX_X - 2) { // ë„ì°©ì  ì§€ì • -> ê³ ì •ì´ ì•„ë‹˜.
 				setColor(text4);
-				printf("¡å");
+				printf("â–¼");
 			}
 			else if (map[i][j] == 0)
 				printf("  ");
@@ -139,90 +141,90 @@ void squaredfs();
 int f[MAX_X][MAX_Y];
 int banbok = 0;
 save[MAX_X][MAX_Y];
-//int[i][j] ¿¡¼­ [i]¿¡ ÇØ´çÇÏ´Â ºÎºĞÀº ¼¼·ÎÁÙ [j]¿¡ ÇØ´çÇÏ´Â ºÎºĞÀº °¡·ÎÁÙ
+//int[i][j] ì—ì„œ [i]ì— í•´ë‹¹í•˜ëŠ” ë¶€ë¶„ì€ ì„¸ë¡œì¤„ [j]ì— í•´ë‹¹í•˜ëŠ” ë¶€ë¶„ì€ ê°€ë¡œì¤„
 void DFS(int i, int j) {
 	f[i][j] = -1;
 	//printf("%d, %d %d\n", i, j, banbok);
-	banbok = banbok + 1; //DFS¸¦ ÅëÇØ ¸î ¹øÂ°·Î Ä­À» ¹æ¹®Çß´ÂÁö Ä«¿îÆ®
-	save[i][j] = banbok; //Ä«¿îÆ® °ªÀ» ³ªÁß¿¡ Ãâ·ÂÇÏ±â À§ÇÑ ¹è¿­
+	banbok = banbok + 1; //DFSë¥¼ í†µí•´ ëª‡ ë²ˆì§¸ë¡œ ì¹¸ì„ ë°©ë¬¸í–ˆëŠ”ì§€ ì¹´ìš´íŠ¸
+	save[i][j] = banbok; //ì¹´ìš´íŠ¸ ê°’ì„ ë‚˜ì¤‘ì— ì¶œë ¥í•˜ê¸° ìœ„í•œ ë°°ì—´
 	squaredfs();
-	if (i - 1 > 0 && (map[i - 1][j] != -1 && map[i - 1][j] != -2) && f[i - 1][j] == 0) DFS(i - 1, j);     //À§     ¡è
-	if (j + 1 < MAX_Y && (map[i][j + 1] != -1 && map[i][j + 1] != -2) && f[i][j + 1] == 0) DFS(i, j + 1); //¿À¸¥ÂÊ ¡æ
-	if (i + 1 < MAX_X && (map[i + 1][j] != -1 && map[i + 1][j] != -2) && f[i + 1][j] == 0) DFS(i + 1, j); //¾Æ·¡   ¡é
-	if (j - 1 > 0 && (map[i][j - 1] != -1 && map[i][j - 1] != -2) && f[i][j - 1] == 0) DFS(i, j - 1);     //¿ŞÂÊ   ¡ç
-	//½Ã°è¹æÇâÀ¸·Î ±íÀÌ ¿ì¼± Å½»ö
+	if (i - 1 > 0 && (map[i - 1][j] != -1 && map[i - 1][j] != -2) && f[i - 1][j] == 0) DFS(i - 1, j);     //ìœ„     â†‘
+	if (j + 1 < MAX_Y && (map[i][j + 1] != -1 && map[i][j + 1] != -2) && f[i][j + 1] == 0) DFS(i, j + 1); //ì˜¤ë¥¸ìª½ â†’
+	if (i + 1 < MAX_X && (map[i + 1][j] != -1 && map[i + 1][j] != -2) && f[i + 1][j] == 0) DFS(i + 1, j); //ì•„ë˜   â†“
+	if (j - 1 > 0 && (map[i][j - 1] != -1 && map[i][j - 1] != -2) && f[i][j - 1] == 0) DFS(i, j - 1);     //ì™¼ìª½   â†
+	//ì‹œê³„ë°©í–¥ìœ¼ë¡œ ê¹Šì´ ìš°ì„  íƒìƒ‰
 }
 
-void squaredfs() { //»ç°¢ÇüÀ¸·Î ¹Ì·Î Ãâ·Â + DFS ¹æ¹ı¼ö Ãâ·Â
+void squaredfs() { //ì‚¬ê°í˜•ìœ¼ë¡œ ë¯¸ë¡œ ì¶œë ¥ + DFS ë°©ë²•ìˆ˜ ì¶œë ¥
 	int a, b;
-	unsigned short text2 = 0x0002; //»ö»ó ÃÊ·Ï»ö
-	unsigned short text5 = 0x0005; //»ö»ó ÀÚÁÖ»ö
-	system("cls"); //ÀÌ°É void DFS ¾È¿¡ ÀÖ´Â squaredfs¸¦ »ç¿ëÇÔÀ¸·Î½á ¾Ö´Ï¸ŞÀÌ¼ÇÃ³·³ Ãâ·Â
-	for (a = 0; a < MAX_Y; a++) // a ³Êºñ
+	unsigned short text2 = 0x0002; //ìƒ‰ìƒ ì´ˆë¡ìƒ‰
+	unsigned short text5 = 0x0005; //ìƒ‰ìƒ ìì£¼ìƒ‰
+	system("cls"); //ì´ê±¸ void DFS ì•ˆì— ìˆëŠ” squaredfsë¥¼ ì‚¬ìš©í•¨ìœ¼ë¡œì¨ ì• ë‹ˆë©”ì´ì…˜ì²˜ëŸ¼ ì¶œë ¥
+	for (a = 0; a < MAX_Y; a++) // a ë„ˆë¹„
 	{
-		for (b = 0; b < MAX_X; b++) //b ³ôÀÌ
+		for (b = 0; b < MAX_X; b++) //b ë†’ì´
 		{
 			if (map[a][b] == -1 || map[a][b] == -2) {
 				setColor(text2);
-				printf(" ¡à"); // -1À» º®À¸·Î
+				printf(" â–¡"); // -1ì„ ë²½ìœ¼ë¡œ
 			}
 			else if (save[a][b] == 0) printf("   ");
-			else if (map[a][b] != -1 || map[a][b] != -2) {// DFS¸¦ ÅëÇØ ±æÀÌ ¼ıÀÚ·Î ³ª¿À¹Ç·Î -1À» Á¦¿ÜÇÑ (¾Æ·¡ÁÖ¼®)
+			else if (map[a][b] != -1 || map[a][b] != -2) {// DFSë¥¼ í†µí•´ ê¸¸ì´ ìˆ«ìë¡œ ë‚˜ì˜¤ë¯€ë¡œ -1ì„ ì œì™¸í•œ (ì•„ë˜ì£¼ì„)
 				setColor(text5);
-				printf("%3d", save[a][b]); // ¡à¿Í ¼ıÀÚ°£°İÀ» ¸ÂÃß±â À§ÇØ %3d,                          ¸ğµç ¼ıÀÚ¿¡ ´ëÇØ¼­ ±×´ë·Î Ãâ·Â
-			} //sqaredfs¿Í squarebfs¿¡¼­ dfsÀÇ °æ¿ì´Â save¹è¿­À» Áö³ª°£ ±æÀÇ À§Ä¡¸¦ ¸î ¹øÂ°·Î Áö³ª°¬´Â Áö¸¦ Ç¥½Ã
-		}     //µû¶ó¼­ save°¡ 0ÀÏ¶§ °ø¹éÀ¸·Î ÇÏ¿© ±æÀ» Ãâ·ÂÇÏ°í, bfsÀÇ °æ¿ì´Â map ¹è¿­À» ±×´ë·Î ¹Ù²ã¼­ °¡Á®´Ù ¾²¹Ç·Î map[a][b] == 0 À¸·Î »ç¿ë
+				printf("%3d", save[a][b]); // â–¡ì™€ ìˆ«ìê°„ê²©ì„ ë§ì¶”ê¸° ìœ„í•´ %3d,                          ëª¨ë“  ìˆ«ìì— ëŒ€í•´ì„œ ê·¸ëŒ€ë¡œ ì¶œë ¥
+			} //sqaredfsì™€ squarebfsì—ì„œ dfsì˜ ê²½ìš°ëŠ” saveë°°ì—´ì„ ì§€ë‚˜ê°„ ê¸¸ì˜ ìœ„ì¹˜ë¥¼ ëª‡ ë²ˆì§¸ë¡œ ì§€ë‚˜ê°”ëŠ” ì§€ë¥¼ í‘œì‹œ
+		}     //ë”°ë¼ì„œ saveê°€ 0ì¼ë•Œ ê³µë°±ìœ¼ë¡œ í•˜ì—¬ ê¸¸ì„ ì¶œë ¥í•˜ê³ , bfsì˜ ê²½ìš°ëŠ” map ë°°ì—´ì„ ê·¸ëŒ€ë¡œ ë°”ê¿”ì„œ ê°€ì ¸ë‹¤ ì“°ë¯€ë¡œ map[a][b] == 0 ìœ¼ë¡œ ì‚¬ìš©
 		printf("\n");
 	}
 }
 
 void squarebfs();
 
-void display() //Ã³À½¿¡ º¸ÀÏ -1°ú -2, 0À¸·Î ÀÌ·ç¾îÁø ¹Ì·Î
+void display() //ì²˜ìŒì— ë³´ì¼ -1ê³¼ -2, 0ìœ¼ë¡œ ì´ë£¨ì–´ì§„ ë¯¸ë¡œ
 {
 	int x, y;
-	for (x = 0; x < MAX_Y; x++) // x ³Êºñ
+	for (x = 0; x < MAX_Y; x++) // x ë„ˆë¹„
 	{
-		for (y = 0; y < MAX_X; y++) // y ³ôÀÌ
-			printf("%3d", map[x][y]); //±ò²ûÇÏ°Ô Ãâ·ÂÇÏ±â À§ÇØ %3d
+		for (y = 0; y < MAX_X; y++) // y ë†’ì´
+			printf("%3d", map[x][y]); //ê¹”ë”í•˜ê²Œ ì¶œë ¥í•˜ê¸° ìœ„í•´ %3d
 		printf("\n");
 	}
 }
 
-void BFS(int x, int y, int k) //³Êºñ ¿ì¼±À¸·Î ¸ğµç ±æ µ¿½Ã Å½»ö
+void BFS(int x, int y, int k) //ë„ˆë¹„ ìš°ì„ ìœ¼ë¡œ ëª¨ë“  ê¸¸ ë™ì‹œ íƒìƒ‰
 {
-	int dx[] = { 0, 1, 0, -1 }; //¹æÇâ ¼³Á¤
-	int dy[] = { 1, 0, -1, 0 }; //¹æÇâ ¼³Á¤
+	int dx[] = { 0, 1, 0, -1 }; //ë°©í–¥ ì„¤ì •
+	int dy[] = { 1, 0, -1, 0 }; //ë°©í–¥ ì„¤ì •
 	int i;
 
 	if (x < 0 || x >= MAX_Y || y < 0 || y >= MAX_X)
-		return; //¸®ÅÏÇÏ´Â ÇÔ¼ö°¡ ¾Æ´Ï¹Ç·Î Àç½ÇÇà
+		return; //ë¦¬í„´í•˜ëŠ” í•¨ìˆ˜ê°€ ì•„ë‹ˆë¯€ë¡œ ì¬ì‹¤í–‰
 
 	if (map[x][y] != 0)
-		return; //¸®ÅÏÇÏ´Â ÇÔ¼ö°¡ ¾Æ´Ï¹Ç·Î Àç½ÇÇà
+		return; //ë¦¬í„´í•˜ëŠ” í•¨ìˆ˜ê°€ ì•„ë‹ˆë¯€ë¡œ ì¬ì‹¤í–‰
 	map[x][y] = k;
-	squarebfs(); //ÀÌ°É ¾²Áö¾ÊÀ» °æ¿ì ¹İÀÀ ¾øÀ½.
+	squarebfs(); //ì´ê±¸ ì“°ì§€ì•Šì„ ê²½ìš° ë°˜ì‘ ì—†ìŒ.
 	for (i = 0; i < 4; ++i)
 		BFS(x + dx[i], y + dy[i], k + 1);
 }
 
-void squarebfs() { //»ç°¢ÇüÀ¸·Î ¹Ì·Î Ãâ·Â + BFS ¹æ¹ı¼ö Ãâ·Â
+void squarebfs() { //ì‚¬ê°í˜•ìœ¼ë¡œ ë¯¸ë¡œ ì¶œë ¥ + BFS ë°©ë²•ìˆ˜ ì¶œë ¥
 	int a, b;
-	unsigned short text2 = 0x0002; //»ö»ó ÃÊ·Ï»ö
-	unsigned short text5 = 0x0005; //»ö»ó ÀÚÁÖ»ö
-	system("cls"); //ÀÌ°É void BFS ¾È¿¡ ÀÖ´Â squarebfs¸¦ »ç¿ëÇÔÀ¸·Î½á ¾Ö´Ï¸ŞÀÌ¼ÇÃ³·³ Ãâ·Â
-	for (a = 0; a < MAX_X; a++) // a ³Êºñ
+	unsigned short text2 = 0x0002; //ìƒ‰ìƒ ì´ˆë¡ìƒ‰
+	unsigned short text5 = 0x0005; //ìƒ‰ìƒ ìì£¼ìƒ‰
+	system("cls"); //ì´ê±¸ void BFS ì•ˆì— ìˆëŠ” squarebfsë¥¼ ì‚¬ìš©í•¨ìœ¼ë¡œì¨ ì• ë‹ˆë©”ì´ì…˜ì²˜ëŸ¼ ì¶œë ¥
+	for (a = 0; a < MAX_X; a++) // a ë„ˆë¹„
 	{
-		for (b = 0; b < MAX_Y; b++) //b ³ôÀÌ
+		for (b = 0; b < MAX_Y; b++) //b ë†’ì´
 		{
 			if (map[a][b] == -1 || map[a][b] == -2) {
 				setColor(text2);
-				printf("¡à"); // -1À» º®À¸·Î
+				printf("â–¡"); // -1ì„ ë²½ìœ¼ë¡œ
 			}
 			else if (map[a][b] == 0) printf("  ");
-			else if (map[a][b] != -1 || map[a][b] != -2) { // BFS¸¦ ÅëÇØ ±æÀÌ ¼ıÀÚ·Î ³ª¿À¹Ç·Î -1À» Á¦¿ÜÇÑ (¾Æ·¡ÁÖ¼®)
+			else if (map[a][b] != -1 || map[a][b] != -2) { // BFSë¥¼ í†µí•´ ê¸¸ì´ ìˆ«ìë¡œ ë‚˜ì˜¤ë¯€ë¡œ -1ì„ ì œì™¸í•œ (ì•„ë˜ì£¼ì„)
 				setColor(text5);
-				printf("%2d", map[a][b]); // ¡à¿Í ¼ıÀÚ°£°İÀ» ¸ÂÃß±â À§ÇØ %2d,                             ¸ğµç ¼ıÀÚ¿¡ ´ëÇØ¼­ ±×´ë·Î Ãâ·Â
+				printf("%2d", map[a][b]); // â–¡ì™€ ìˆ«ìê°„ê²©ì„ ë§ì¶”ê¸° ìœ„í•´ %2d,                             ëª¨ë“  ìˆ«ìì— ëŒ€í•´ì„œ ê·¸ëŒ€ë¡œ ì¶œë ¥
 			}
 		}
 		printf("\n");
@@ -230,71 +232,125 @@ void squarebfs() { //»ç°¢ÇüÀ¸·Î ¹Ì·Î Ãâ·Â + BFS ¹æ¹ı¼ö Ãâ·Â
 }
 
 int main() {
-	unsigned short text3 = 0x0003; //»ö»ó ³ë¶õ»ö
-	unsigned short text7 = 0x0007; //»ö»ó ÇÏ¾á»ö
-	printf("»ı¼ºµÈ ¹Ì·ÎÀÔ´Ï´Ù.\n");
-	printf("1Àº Á÷Á¢Ã£±â, 2´Â DFS, 3Àº BFS\n");
+
+	typedef struct _CONSOLE_CURSOR_INFO {
+		DWORD  dwSize;
+		BOOL   bVisible;
+	} CONSOLE_CURSOR_INFO, * PCONSOLE_CURSOR_INFO;
+
+	static HANDLE hOut;
+	CONSOLE_CURSOR_INFO cInfo;
+
+	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	cInfo.dwSize = 10; //ì»¤ì„œ í¬ê¸° ì¡°ì • ê´€ë ¨ 10~100 ìœ íš¨ê°’
+	cInfo.bVisible = FALSE; // TRUE í˜¹ì€ FALSE ë¡œ ì»¤ì„œì˜ ìœ ë¬´ ì¡°ì ˆ ê°€ëŠ¥
+	SetConsoleCursorInfo(hOut, &cInfo);
+
+	unsigned short text3 = 0x0003; //ìƒ‰ìƒ í•˜ëŠ˜ìƒ‰
+	unsigned short text6 = 0x0006; //ìƒ‰ìƒ í•˜ì–€ìƒ‰
+	unsigned short text7 = 0x0007; //ìƒ‰ìƒ í•˜ì–€ìƒ‰
+
 	initMap();
 	SetLoad();
 	Draw_Maze();
 	int select;
-	scanf_s("%d", &select);
-	if (select == 1) {
-		//Draw_Maze();
-		int ch_x = 1, ch_y = 1; // characterÀÇ À§Ä¡ [x°¡ ³ôÀÌ°ü·Ã y°¡ ³Êºñ°ü·Ã]
-		int cmd = 0; // command È­»ìÇ¥ °ü·Ã
-		while (1) {
-			system("cls"); // ÀÌÀü °á°ú¸¦ Áö¿ì°í ÀÌÈÄ °á°ú ÀçÃâ·Â (±ôºıÀÓ)
-			printf("±æÃ£±â ¼º°ø ÈÄ End¸¦ ´©¸£½Ê½Ã¿À.\n");
-			printf("(¡å¿¡ µµÂø½Ã ±æÃ£±â ¼º°øÀÔ´Ï´Ù.)\n");
-			character(ch_x, ch_y);
+	int select2;
+
+	while (1) {
+		printf("1ì€ ì¬ìƒì„±, 2ëŠ” ë¯¸ë¡œì°¾ê¸° ì‹œì‘\n");
+		scanf_s("%d", &select2);
+		if (select2 == 1) {
+			system("cls");
+			initMap();
+			SetLoad();
 			Draw_Maze();
-			cmd = _getch();
-			if (cmd == 77 && map[ch_x][ch_y + 1] == 0) {
-				map[ch_x][ch_y] = 0;
-				ch_y++; // ¡æ¹æÇâ 77
+		}
+		else if (select2 == 2) {
+			printf("ìƒì„±ëœ ë¯¸ë¡œì…ë‹ˆë‹¤.\n");
+			printf("1ì€ ì§ì ‘ì°¾ê¸°, 2ëŠ” DFS, 3ì€ BFS\n");
+			scanf_s("%d", &select);
+			if (select == 1) {
+				clock_t start = clock(); //ì‚¬ëŒì´ ì§ì ‘ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì‹œì‘
+				//Draw_Maze();
+				int ch_x = 1, ch_y = 1; // characterì˜ ìœ„ì¹˜ [xê°€ ë†’ì´ê´€ë ¨ yê°€ ë„ˆë¹„ê´€ë ¨]
+				int cmd = 0; // command í™”ì‚´í‘œ ê´€ë ¨
+				while (1) {
+					system("cls"); // ì´ì „ ê²°ê³¼ë¥¼ ì§€ìš°ê³  ì´í›„ ê²°ê³¼ ì¬ì¶œë ¥ (ê¹œë¹¡ì„)
+					setColor(text7);
+					printf("ê¸¸ì°¾ê¸° ì„±ê³µ í›„ Endë¥¼ ëˆ„ë¥´ì‹­ì‹œì˜¤.\n");
+					printf("(â–¼ì— ë„ì°©ì‹œ ê¸¸ì°¾ê¸° ì„±ê³µì…ë‹ˆë‹¤.)\n");
+					character(ch_x, ch_y);
+					Draw_Maze();
+					cmd = _getch();
+					if (cmd == 77 && map[ch_x][ch_y + 1] == 0) {
+						map[ch_x][ch_y] = 0;
+						ch_y++; // â†’ë°©í–¥ 77
+					}
+					else if (cmd == 72 && map[ch_x - 1][ch_y] == 0) {
+						map[ch_x][ch_y] = 0;
+						ch_x--; // â†‘ë°©í–¥ 72
+					}
+					else if (cmd == 75 && map[ch_x][ch_y - 1] == 0) {
+						map[ch_x][ch_y] = 0;
+						ch_y--; // â†ë°©í–¥ 75
+					}
+					else if (cmd == 80 && map[ch_x + 1][ch_y] == 0) {
+						map[ch_x][ch_y] = 0;
+						ch_x++; // â†“ë°©í–¥ 80
+					}
+					//if (map[19][18] == 3 && cmd == 77 && map[ch_x][ch_y + 1] == 4) {
+						//map[ch_x][ch_y] = 0;
+						//ch_y++;
+						//map[19][19] = 0; // ë‚´ê°€ ë§Œë“¤ ëª¨ë“  ë¯¸ë¡œì˜ ë„ì°©ì§€ì ì´ [ìµœëŒ€í¬ê¸°-1][ìµœëŒ€í¬ê¸°-1] ì¸ ì ì„ ê°ì•ˆ. ìœ„ì˜ ì£¼ì„ê³¼ ë™ì¼
+					//}
+					if (map[19][19] == 3 && cmd == 79) {
+						clock_t end = clock(); //ì‚¬ëŒì´ ì§ì ‘ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì¢…ë£Œ
+						setColor(text6);
+						printf("í•´ê²° ì‹œê°„: %lfì´ˆ\n", (double)(end - start) / CLOCKS_PER_SEC); //ì‹œê°„ ì¶œë ¥
+
+						setColor(text7);
+						printf("ê¸¸ì°¾ê¸° ì„±ê³µ!! \ní”„ë¡œê·¸ë¨ì„ ì¢…ë£Œí•©ë‹ˆë‹¤...\n"); // End ë²„íŠ¼ìœ¼ë¡œ ì¢…ë£Œ 79
+
+						return 0;
+					}
+				}
 			}
-			else if (cmd == 72 && map[ch_x - 1][ch_y] == 0) {
-				map[ch_x][ch_y] = 0;
-				ch_x--; // ¡è¹æÇâ 72
+			else if (select == 2) {
+				clock_t start = clock(); //DFSë¡œ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì‹œì‘
+				printf("\n\n");
+				DFS(1, 1);
+				squaredfs();
+
+				clock_t end = clock(); //DFSë¡œ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì¢…ë£Œ
+				setColor(text6);
+				printf("í•´ê²° ì‹œê°„: %lfì´ˆ\n", (double)(end - start) / CLOCKS_PER_SEC); //ì‹œê°„ ì¶œë ¥
+
+				setColor(text3);
+				printf("     %d", save[19][19]); //squaredfsì˜ ì£¼ì„ê³¼ ë¹„ìŠ·í•œ ë°©ì‹ìœ¼ë¡œ save[][]ë¡œ ì¶œë ¥ DFSë¡œ ëª‡ ë²ˆì§¸ì— ì°¾ì•˜ëŠ”ì§€ ì¶œë ¥
+				setColor(text7);
+				printf("ë²ˆì§¸ì—ì„œ ì°¾ì•˜ìŠµë‹ˆë‹¤.");
+
+				return 0;
 			}
-			else if (cmd == 75 && map[ch_x][ch_y - 1] == 0) {
-				map[ch_x][ch_y] = 0;
-				ch_y--; // ¡ç¹æÇâ 75
-			}
-			else if (cmd == 80 && map[ch_x + 1][ch_y] == 0) {
-				map[ch_x][ch_y] = 0;
-				ch_x++; // ¡é¹æÇâ 80
-			}
-			//if (map[19][18] == 3 && cmd == 77 && map[ch_x][ch_y + 1] == 4) {
-				//map[ch_x][ch_y] = 0;
-				//ch_y++;
-				//map[19][19] = 0; // ³»°¡ ¸¸µé ¸ğµç ¹Ì·ÎÀÇ µµÂøÁöÁ¡ÀÌ [ÃÖ´ëÅ©±â-1][ÃÖ´ëÅ©±â-1] ÀÎ Á¡À» °¨¾È. À§ÀÇ ÁÖ¼®°ú µ¿ÀÏ
-			//}
-			if (map[19][19] == 3 && cmd == 79) {
-				printf("±æÃ£±â ¼º°ø!! \nÇÁ·Î±×·¥À» Á¾·áÇÕ´Ï´Ù...\n"); // End ¹öÆ°À¸·Î Á¾·á 79
+			else if (select == 3) {
+				clock_t start = clock(); //BFSë¡œ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì‹œì‘
+				printf("\n\n");
+				BFS(1, 1, 1);
+				squarebfs();
+
+				clock_t end = clock(); //BFSë¡œ ì°¾ëŠ” ë¯¸ë¡œ ì‹œê°„ ì‹œì‘
+				setColor(text6);
+				printf("í•´ê²° ì‹œê°„: %lfì´ˆ\n", (double)(end - start) / CLOCKS_PER_SEC); //ì‹œê°„ ì¶œë ¥
+
+				setColor(text3);
+				printf("      %d", map[19][19]); //squarebfsì˜ ì£¼ì„ê³¼ ë¹„ìŠ·í•œ ë°©ì‹ìœ¼ë¡œ map[][]ë¡œ ì¶œë ¥ BFSë¡œ ëª‡ ë²ˆì§¸ì— ì°¾ì•˜ëŠ”ì§€ ì¶œë ¥
+				setColor(text7);
+				printf("ë²ˆì§¸ì—ì„œ ì°¾ì•˜ìŠµë‹ˆë‹¤.");
+				//printf("\n");
+				//display(); //squareì„ ê±°ì¹˜ì§€ ì•Šì€ ë¯¸ë¡œ+ë°©ë²•ìˆ˜ ì¶œë ¥
+
 				return 0;
 			}
 		}
-	}
-	else if (select == 2) {
-		printf("\n\n");
-		DFS(1, 1);
-		squaredfs();
-		setColor(text3);
-		printf("     %d", save[19][19]); //squaredfsÀÇ ÁÖ¼®°ú ºñ½ÁÇÑ ¹æ½ÄÀ¸·Î save[][]·Î Ãâ·Â DFS·Î ¸î ¹øÂ°¿¡ Ã£¾Ò´ÂÁö Ãâ·Â
-		setColor(text7);
-		printf("¹øÂ°¿¡¼­ Ã£¾Ò½À´Ï´Ù.");
-	}
-	else if (select == 3) {
-		printf("\n\n");
-		BFS(1, 1, 1);
-		squarebfs();
-		setColor(text3);
-		printf("      %d", map[19][19]); //squarebfsÀÇ ÁÖ¼®°ú ºñ½ÁÇÑ ¹æ½ÄÀ¸·Î map[][]·Î Ãâ·Â DFS·Î ¸î ¹øÂ°¿¡ Ã£¾Ò´ÂÁö Ãâ·Â
-		setColor(text7);
-		printf("¹øÂ°¿¡¼­ Ã£¾Ò½À´Ï´Ù.");
-		//printf("\n");
-		//display(); //squareÀ» °ÅÄ¡Áö ¾ÊÀº ¹Ì·Î+¹æ¹ı¼ö Ãâ·Â
 	}
 }
